@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Calificación</title>
+
+    <style>
+      /* --- Estilos Generales (CSS) --- */
+
+      /* Usamos box-sizing para que el padding no afecte el ancho total */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: #f0f2ff; /* Un fondo gris azulado claro */
+
+        /* Cambios aquí: Usamos flex en columna para empujar el footer */
+        display: flex;
+        flex-direction: column; /* Apila los elementos verticalmente */
+        min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+      }
+
+      /* * Este contenedor "crece" (flex-grow: 1) para ocupar todo el 
+         * espacio disponible, empujando el footer hacia abajo.
+         */
+      .contenido-principal {
+        flex-grow: 1; /* Esta es la clave */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px; /* Espacio alrededor de la tarjeta */
+      }
+
+      /* --- Estilos de la Calculadora --- */
+      .calculadora-contenedor {
+        background-color: #ffffff; /* Fondo blanco */
+        padding: 28px;
+        border-radius: 12px; /* Bordes redondeados */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave */
+
+        /* Esto controla el tamaño en diferentes pantallas */
+        width: 100%; /* Ocupa todo el ancho disponible */
+        max-width: 400px; /* ...pero con un límite máximo para tablets/PC */
+      }
+
+      h1 {
+        font-size: 1.5rem; /* 24px */
+        font-weight: 600;
+        color: #1c1e21;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .campo-entrada {
+        margin-bottom: 16px;
+      }
+
+      .campo-entrada label {
+        display: block;
+        font-size: 0.9rem; /* 14px */
+        font-weight: 500;
+        color: #606770;
+        margin-bottom: 6px;
+      }
+
+      .campo-entrada input {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 1rem; /* 16px */
+        border: 1px solid #dddfe2;
+        border-radius: 8px;
+        outline: none; /* Quitamos el borde azul al hacer clic */
+      }
+
+      .campo-entrada input:focus {
+        border-color: #007bff; /* Color azul */
+      }
+
+      /* --- Estilos del Botón --- */
+      .boton-calcular {
+        width: 100%;
+        padding: 14px;
+        font-size: 1.1rem; /* 17px */
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #007bff; /* Azul primario */
+        border: none;
+        border-radius: 8px;
+        cursor: pointer; /* Manita al pasar el mouse */
+        transition: background-color 0.2s ease;
+      }
+
+      .boton-calcular:hover {
+        background-color: #0056b3; /* Azul más oscuro */
+      }
+
+      /* --- Estilos del Resultado --- */
+      #area-resultado {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        /* Oculto por defecto, se mostrará con JS */
+        display: none;
+      }
+
+      .resultado-bien {
+        background-color: #e6f7ec; /* Fondo verde claro */
+        color: #155724; /* Texto verde oscuro */
+      }
+
+      .resultado-precaucion {
+        background-color: #fff4e5; /* Fondo naranja claro */
+        color: #663c00; /* Texto naranja oscuro */
+      }
+
+      .resultado-mal {
+        background-color: #fdecea; /* Fondo rojo claro */
+        color: #a51825; /* Texto rojo oscuro */
+      }
+
+      /* --- ESTILOS NUEVOS PARA EL FOOTER --- */
+      footer {
+        width: 100%;
+        background-color: #ffffff; /* Fondo blanco */
+        border-top: 1px solid #dddfe2; /* Línea superior sutil */
+        padding: 20px 30px; /* Espaciado interno */
+
+        /* Usamos flex para alinear tu nombre y ESISCOM */
+        display: flex;
+        justify-content: space-between; /* Los separa */
+        align-items: center;
+        flex-wrap: wrap; /* Si no caben, se apilan */
+        gap: 10px; /* Espacio entre elementos si se apilan */
+
+        /* Estilos de texto */
+        font-size: 0.85rem; /* Texto un poco más pequeño */
+        color: #606770;
+      }
+
+      footer a {
+        color: #007bff; /* Mismo azul que el botón */
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      footer a:hover {
+        text-decoration: underline; /* Subrayado al pasar el mouse */
+      }
+
+      /* Ajuste para celulares (hace que se centre) */
+      @media (max-width: 480px) {
+        footer {
+          flex-direction: column; /* Apila tu nombre y ESISCOM */
+          justify-content: center; /* Los centra */
+          gap: 8px; /* Un poco de espacio entre ellos */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="contenido-principal">
+      <div class="calculadora-contenedor">
+        <h1>¿Cuánto necesitas para pasar?</h1>
+
+        <div class="campo-entrada">
+          <label for="parcial1">Calificación Parcial 1 (30%)</label>
+          <input
+            type="number"
+            id="parcial1"
+            placeholder="Ej: 8"
+            min="0"
+            max="10"
+            step="0.1"
+          />
+        </div>
+
+        <div class="campo-entrada">
+          <label for="parcial2">Calificación Parcial 2 (30%)</label>
+          <input
+            type="number"
+            id="parcial2"
+            placeholder="Ej: 6"
+            min="0"
+            max="10"
+            step="0.1"
+          />
+        </div>
+
+        <button class="boton-calcular" id="botonCalcular">Calcular</button>
+
+        <div id="area-resultado">
+          <p id="textoResultado"></p>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <span>Creado por M.I.C Emmanuel Rojas</span>
+      <span>
+        &copy;
+        <a
+          href="https://mamueljr.github.io/esiscom/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >ESISCOM</a
+        >
+      </span>
+    </footer>
+
+    <script>
+      // 1. Obtenemos los elementos del HTML que necesitamos
+      const inputP1 = document.getElementById("parcial1");
+      const inputP2 = document.getElementById("parcial2");
+      const boton = document.getElementById("botonCalcular");
+      const areaResultado = document.getElementById("area-resultado");
+      const textoResultado = document.getElementById("textoResultado");
+
+      // 2. Agregamos un "oyente" para el evento 'click' en el botón
+      boton.addEventListener("click", function () {
+        // 3. Obtenemos los valores y los convertimos a números decimales
+        const p1 = parseFloat(inputP1.value);
+        const p2 = parseFloat(inputP2.value);
+
+        // 4. Validación sencilla
+        if (isNaN(p1) || isNaN(p2)) {
+          alert(
+            "Por favor, ingresa calificaciones válidas en ambos parciales."
+          );
+          return; // Detenemos la función aquí
+        }
+
+        // 5. El Cálculo
+        const ponderadoActual = p1 * 0.3 + p2 * 0.3;
+        const puntosFaltantes = 7 - ponderadoActual;
+        let p3 = puntosFaltantes / 0.4;
+
+        // Redondeamos el resultado a 2 decimales
+        p3 = p3.toFixed(2);
+
+        // 6. Mostramos el resultado con mensajes y estilos
+
+        // Quitamos estilos anteriores
+        areaResultado.classList.remove(
+          "resultado-bien",
+          "resultado-precaucion",
+          "resultado-mal"
+        );
+
+        if (p3 <= 0) {
+          // Ya pasó
+          textoResultado.textContent = `¡Felicidades! Ya aprobaste la materia. Necesitas 0 en el último parcial.`;
+          areaResultado.classList.add("resultado-bien"); // Estilo verde
+        } else if (p3 > 10) {
+          // Ya no puede pasar
+          textoResultado.textContent = `Necesitas sacar ${p3}. Lamentablemente, ya no es posible aprobar (la máxima es 10).`;
+          areaResultado.classList.add("resultado-mal"); // Estilo rojo
+        } else {
+          // El caso normal
+          textoResultado.textContent = `Necesitas sacar al menos ${p3} en el tercer parcial para aprobar con 7.`;
+          areaResultado.classList.add("resultado-precaucion"); // Estilo naranja
+        }
+
+        // Hacemos visible el área de resultado
+        areaResultado.style.display = "block";
+      });
+    </script>
+  </body>
+</html>
